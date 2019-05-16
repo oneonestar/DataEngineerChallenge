@@ -4,6 +4,12 @@
 * Can be used to handle large scale streaming log data in real-time (power by Flink Cluster)
 * Implement a custom window aggregater(UserSessionAggregate), minimize the memory usage for streaming aggregation
 
+## Limitations (TODO)
+* Handle late data after watermark instead of holds back the watermark
+* Handle parsing error (invalid / malformatted log)
+* Create test for watermark and trigger
+* Verify the output result with the provided dataset
+
 ## How to compile and run
 ```bash
 # Compile and run
