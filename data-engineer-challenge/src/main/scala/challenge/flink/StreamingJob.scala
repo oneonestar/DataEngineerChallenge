@@ -75,7 +75,7 @@ object StreamingJob {
     env.execute("PayPay Data Engineer Challenge")
   }
 
-  def createFileSink(path: String) = {
+  private def createFileSink(path: String) = {
     StreamingFileSink
       .forRowFormat(new Path(path), new SimpleStringEncoder[String]("UTF-8"))
       .build()

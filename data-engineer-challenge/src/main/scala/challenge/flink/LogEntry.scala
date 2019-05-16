@@ -37,6 +37,7 @@ object LogEntry {
 
   def parse(textRow: String): Row = {
     // See: https://docs.aws.amazon.com/athena/latest/ug/elasticloadbalancer-classic-logs.html
+    // TODO: handle parsing error
     val regex =
       """([^ ]*) ([^ ]*) ([^ ]*):([0-9]*) ([^ ]*)[:-]([0-9]*) ([-.0-9]*) ([-.0-9]*) ([-.0-9]*) (|[-0-9]*) (-|[-0-9]*) ([-0-9]*) ([-0-9]*) \"([^ ]*) ([^ ]*) (- |[^ ]*)\" (\"[^\"]*\") ([A-Z0-9-]+) ([A-Za-z0-9.-]*)$""".r
     val m = regex.findFirstMatchIn(textRow).get
