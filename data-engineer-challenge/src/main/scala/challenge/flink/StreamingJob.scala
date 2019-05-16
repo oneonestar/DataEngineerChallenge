@@ -43,7 +43,7 @@ object StreamingJob {
       .map(r => r.toString()).addSink(createFileSink("output/task1"))
 
     // Need a big global window to aggregate the results
-    val globalAggregateWindow = Time.days(5)
+    val globalAggregateDuration = Time.days(5)
 
     // 2. Determine the average session time
     def timediff(t1: java.sql.Timestamp, t2: java.sql.Timestamp) =
@@ -51,7 +51,7 @@ object StreamingJob {
 
     aggregatedStream
       .map(r => (r.request_ip, timediff(r.latest_time.get, r.earliest_time.get)))
-      .windowAll(TumblingEventTimeWindows.of(globalAggregateWindow))
+      .windowAll(TumblingEventTimeWindows.of(globalAggregateDuration))
       .aggregate(new AvgAggregate)
       .map(r => r.toString()).addSink(createFileSink("output/task2"))
 
@@ -64,12 +64,13 @@ object StreamingJob {
 
     // 4. Find the most engaged users, ie the IPs with the longest session times
     aggregatedStream
-      .keyBy("request_ip")
-      .window(EventTimeSessionWindows.withGap(globalAggregateWindow))
-      .sum("count")
-      .windowAll(TumblingEventTimeWindows.of(globalAggregateWindow))
-      .maxBy("count")
-      .map(x => (x.request_ip, x.count))
+      .map(r => (r.request_ip, timediff(r.latest_time.get, r.earliest_time.get)))
+      .keyBy(0)
+//      .window(EventTimeSessionWindows.withGap(globalAggregateDuration))
+//      .sum(1)
+      .windowAll(TumblingEventTimeWindows.of(globalAggregateDuration))
+      .aggregate(new TopAggregate(10))
+      .flatMap(x => for (fn <- x) yield fn)
       .map(r => r.toString()).addSink(createFileSink("output/task4"))
 
     env.execute("PayPay Data Engineer Challenge")
