@@ -1,3 +1,89 @@
+# Analyze ELB log using Apache Flink
+## How to compile and run
+```bash
+# Compile and run
+$ cd data-engineer-challenge
+$ mvn clean package
+$ mvn exec:java -Dexec.mainClass=challenge.flink.StreamingJob -Dexec.cleanupDaemonThreads=false
+
+
+# See outputs. Beware Flink output file as hidden file
+$ head output/task1/*/.*
+==> output/task1/2019-05-16--10/.part-0-0.inprogress.fb1f00d2-a93a-4b06-9806-a929a6ebcd9d <==
+(112.79.36.98,1)
+(107.167.109.45,1)
+(106.51.133.0,1)
+(49.249.39.29,1)
+(178.255.152.2,1)
+(106.206.149.203,2)
+(223.176.5.63,1)
+(70.39.184.200,2)
+(202.142.81.245,7)
+(37.228.107.126,1)
+
+==> output/task1/2019-05-16--10/.part-1-0.inprogress.d3ef4941-d196-4e24-874a-01cae7e7d11b <==
+(117.227.142.117,1)
+(120.56.218.165,3)
+(106.51.155.229,1)
+(199.190.46.39,1)
+....
+
+
+$ head output/task2/*/.*
+100.72751039354888
+```
+
+## Sample output
+```text
+1. All page hits by visitor/IP during a session.
+====================
+(ip, page hit count)
+--------------------
+(123.236.61.25,5)
+(14.96.205.187,6)
+(117.226.247.46,2)
+(213.239.204.204,83)
+(125.63.102.8,8)
+(216.35.100.190,5)
+(106.216.161.16,1)
+(103.224.156.230,21)
+(70.39.187.219,1)
+(117.205.84.21,1)
+(180.151.178.59,2)
+(101.223.179.155,5)
+====================
+
+2. Determine the average session time
+100.7275103935488
+
+3. Determine unique URL visits per session. To clarify, count a hit to a unique URL only once per session.
+======================
+(ip, unique hit count)
+----------------------
+(116.203.200.165,43)
+(27.131.213.130,3)
+(106.51.132.39,3)
+(14.98.76.185,3)
+(103.48.108.3,3)
+(117.206.134.133,6)
+(107.167.108.143,3)
+(117.201.82.93,1)
+(107.167.107.10,3)
+(164.100.1.92,11)
+(103.37.201.252,7)
+(182.68.136.65,104)
+(1.187.143.206,7)
+(123.201.175.102,1)
+(103.16.69.11,11)
+(117.220.128.57,2)
+======================
+
+4. Find the most engaged users, ie the IPs with the longest session times
+(52.74.219.71,40633)
+```
+
+---
+
 # DataEngineerChallenge
 
 This is an interview challenge for PayPay. Please feel free to fork. Pull Requests will be ignored.
