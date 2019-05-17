@@ -107,6 +107,13 @@ $ head output/task2/*/.*
 
 ```
 
+## Testing environment
+```text
+Java 1.8.0_181
+Apache Maven 3.6.1
+MacOS Mojave 10.14.4
+```
+
 ---
 
 # DataEngineerChallenge
