@@ -11,6 +11,9 @@ import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.types.Row
 
 object StreamingJob {
+  def timediff(t1: java.sql.Timestamp, t2: java.sql.Timestamp) =
+    math.abs(t1.getTime - t2.getTime) / 1000.0
+
   def main(args: Array[String]) {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
@@ -37,6 +40,15 @@ object StreamingJob {
       .aggregate(new UserSessionAggregate)
 
 
+    aggregatedStream
+      .map(r => (r.request_ip,
+        r.earliest_time,
+        r.latest_time,
+        timediff(r.latest_time.get, r.earliest_time.get),
+        r.count,
+        r.unique_url.size).toString())
+      .addSink(createFileSink("output/task0"))
+
     // 1. All page hits by visitor/IP during a session.
     aggregatedStream
       .map(r => (r.request_ip, r.count))
@@ -46,9 +58,6 @@ object StreamingJob {
     val globalAggregateDuration = Time.days(5)
 
     // 2. Determine the average session time
-    def timediff(t1: java.sql.Timestamp, t2: java.sql.Timestamp) =
-      math.abs(t1.getTime - t2.getTime) / 1000.0
-
     aggregatedStream
       .map(r => (r.request_ip, timediff(r.latest_time.get, r.earliest_time.get)))
       .windowAll(TumblingEventTimeWindows.of(globalAggregateDuration))
